@@ -1,5 +1,6 @@
 import React from 'react';
 import useViewModel from '../viewModel/photoViewModel';
+import Photo from '../components/Photo';
 
 const PhotoList: React.FC = () => {
   const {photos, loading, error} = useViewModel();
@@ -15,7 +16,7 @@ const PhotoList: React.FC = () => {
   return (
     <div>
       {photos.map((photo) => (
-        <img key={photo.id} src={photo.download_url} alt={photo.author} />
+        <Photo key={photo.id} id={photo.id} url={photo.download_url} author={photo.author} />
       ))}
     </div>
   );
