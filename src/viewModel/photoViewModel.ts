@@ -1,45 +1,45 @@
 import {useState, useEffect} from 'react';
-import fetchPhotos from '../model/Api';
+import fetchPhotos from './api';
+import { ViewModel, Photo } from '../model/PhotoModel';
+import useErrorHandler from '../utils/ErrorHandler';
 
-interface Photo {
-  id: string;
-  download_url: string;
-  author: string;
-}
-
-interface ViewModel {
-  photos: Photo[];
-  loading: boolean;
-  error: Error | null;
-}
-
-const useViewModel = (): ViewModel => {
+const photoViewModel = (): ViewModel => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [refetch, setRefetch] = useState<boolean>(false);
+  
+  const {error, setError, clearError} = useErrorHandler();
+
+  const fetchPhotosData = async () => {
+    try {
+      const data = await fetchPhotos(2, 100);
+      return data;
+    } catch (error) {
+      setError(error);
+      throw error;
+    }
+  };
 
   useEffect(() => {
-    const fetchPhotosData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await fetchPhotos(2, 100);
+    setLoading(true);
+    clearError();
+    fetchPhotosData()
+      .then((data) => {
         setPhotos(data);
         setLoading(false);
-      } catch (error) {
+      })
+      .catch((error) => {
         setError(error);
         setLoading(false);
-      }
-    };
-
-    fetchPhotosData();
-  }, []);
+      });
+  }, [refetch]);
 
   return {
     photos,
     loading,
     error,
+    setRefetch: () => setRefetch(!refetch),
   };
 };
 
-export default useViewModel;
+export default photoViewModel;

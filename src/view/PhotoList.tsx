@@ -1,9 +1,9 @@
 import React from 'react';
-import useViewModel from '../viewModel/photoViewModel';
+import photoViewModel from '../viewModel/photoViewModel';
 import Photo from '../components/Photo';
 
 const PhotoList: React.FC = () => {
-  const {photos, loading, error} = useViewModel();
+  const {photos, loading, error} = photoViewModel();
 
   if (loading) {
     return <div>Loading...</div>;
